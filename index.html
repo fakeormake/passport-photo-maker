@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<!-- ============================================================ -->
+<!-- SEO: TITLE / META / OPEN GRAPH / TWITTER                       -->
+<!-- ============================================================ -->
+<title>Free Passport Photo Maker – 2x2, 35x45mm &amp; JPG Converter</title>
+<meta name="description" content="Create a 2x2 US passport photo, 35x45mm EU/UK photo, or convert any image to JPG — right in your browser. Nothing is uploaded. No account, no watermark, iPhone HEIC supported.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://example.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Passport Photo Maker – 2x2, 35x45mm & JPG Converter">
+<meta property="og:description" content="Make passport, visa and ID photos to the exact size you need, directly in your browser. Your photo is never uploaded.">
+<meta property="og:url" content="https://example.com/">
+<meta property="og:site_name" content="Passport Photo Maker">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Passport Photo Maker – 2x2, 35x45mm & JPG Converter">
+<meta name="twitter:description" content="Passport and ID photos, exact sizes, made entirely on your device. No uploads, no account, no watermark.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232563eb%22/><rect x=%2230%22 y=%2222%22 width=%2240%22 height=%2256%22 rx=%226%22 fill=%22white%22/></svg>">
+
+<!-- Tailwind (CDN) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+        colors: {
+          ink: '#0f172a',
+          paper: '#f8fafc',
+        }
+      }
+    }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  html { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+  body { background:#f1f5f9; }
+
+  /* ---------- Focus states (accessibility) ---------- */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  /* ---------- Checkerboard background for transparent PNG preview ---------- */
+  .checkerboard {
+    background-image:
+      linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+      linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+      linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color: #f8fafc;
+  }
+
+  /* ---------- Crop / editor viewport ---------- */
+  #editorViewport {
+    touch-action: none; /* required so Pointer Events control panning on touch devices */
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  #editorViewport.dragging { cursor: grabbing; }
+  #editorCanvas { display:block; width:100%; height:100%; }
+
+  .guide-line { stroke: #22c55e; stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.85; }
+  .guide-label {
+    fill: #15803d; font-size: 9px; font-weight: 600;
+  }
+
+  /* ---------- Upload dropzone ---------- */
+  #dropzone.drag-active {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+  }
+
+  /* ---------- Range slider ---------- */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 9999px;
+    background: #e2e8f0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px; height: 24px;
+    border-radius: 9999px;
+    background: #2563eb;
+    border: 3px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    cursor: pointer;
+    margin-top: -9px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px; height: 24px;
+    border-radius: 9999px;
+    background: #2563eb;
+    border: 3px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-track { height: 6px; border-radius: 9999px; background:#e2e8f0; }
+
+  /* ---------- Utility: visually-hidden but accessible ---------- */
+  .sr-only-focusable:not(:focus) {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+
+<body class="text-ink antialiased">
+
+<!-- ============================================================ -->
+<!-- SKIP LINK                                                     -->
+<!-- ============================================================ -->
+<a href="#main-tool" class="sr-only-focusable fixed top-2 left-2 z-50 bg-white px-4 py-2 rounded shadow">Skip to tool</a>
+
+<!-- ADSENSE TOP -->
+<div id="adsense-top"></div>
+
+<!-- ============================================================ -->
+<!-- HEADER                                                        -->
+<!-- ============================================================ -->
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="20" fill="#2563eb"/><rect x="30" y="22" width="40" height="56" rx="6" fill="white"/></svg>
+          <span class="font-semibold text-slate-700">Passport Photo Maker</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Free Online Passport Photo Maker &amp; Image Converter</h1>
+        <p class="mt-2 text-slate-600 max-w-xl">Create passport, visa and ID photos directly in your browser — no uploads, no account, no watermark.</p>
+      </div>
+      <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 text-sm font-medium">
+        🔒 100% Client-Side
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- TRUST STRIP                                                   -->
+<!-- ============================================================ -->
+<div class="bg-slate-900">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap gap-x-6 gap-y-1 justify-center text-xs sm:text-sm text-slate-200">
+    <span>🔒 No Upload</span>
+    <span>⚡ Browser Processing</span>
+    <span>📐 Exact Dimensions</span>
+    <span>📱 iPhone &amp; Android Friendly</span>
+  </div>
+</div>
+
+<main id="main-tool" class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+
+  <!-- ========================================================== -->
+  <!-- STEP INDICATOR                                              -->
+  <!-- ========================================================== -->
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm text-slate-500 mb-6" aria-label="Workflow steps">
+    <li id="step-indicator-1" class="flex items-center gap-1.5 font-semibold text-blue-600"><span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">1</span> Choose size</li>
+    <li aria-hidden="true" class="text-slate-300">—</li>
+    <li id="step-indicator-2" class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-slate-200 text-slate-500 text-xs flex items-center justify-center">2</span> Upload</li>
+    <li aria-hidden="true" class="text-slate-300">—</li>
+    <li id="step-indicator-3" class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-slate-200 text-slate-500 text-xs flex items-center justify-center">3</span> Position &amp; adjust</li>
+    <li aria-hidden="true" class="text-slate-300">—</li>
+    <li id="step-indicator-4" class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-slate-200 text-slate-500 text-xs flex items-center justify-center">4</span> Download</li>
+  </ol>
+
+  <!-- ========================================================== -->
+  <!-- STATUS / ERROR BANNER (shared)                              -->
+  <!-- ========================================================== -->
+  <div id="statusBanner" class="hidden mb-4 rounded-lg border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 1: SIZE SELECTOR                                    -->
+  <!-- ========================================================== -->
+  <section aria-labelledby="size-heading" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 id="size-heading" class="text-lg font-semibold text-slate-900 mb-1">Choose Photo Type</h2>
+    <p class="text-sm text-slate-500 mb-4">Pick the format you need. You can change this at any time.</p>
+
+    <div id="presetGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5" role="radiogroup" aria-label="Photo type"></div>
+
+    <!-- Custom size controls -->
+    <div id="customSizeControls" class="hidden mt-5 pt-5 border-t border-slate-200">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
+        <div>
+          <label for="customWidth" class="block text-xs font-medium text-slate-600 mb-1">Width</label>
+          <input id="customWidth" type="number" min="1" step="any" value="35" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label for="customHeight" class="block text-xs font-medium text-slate-600 mb-1">Height</label>
+          <input id="customHeight" type="number" min="1" step="any" value="45" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label for="customUnit" class="block text-xs font-medium text-slate-600 mb-1">Unit</label>
+          <select id="customUnit" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white">
+            <option value="mm">mm</option>
+            <option value="inch">inches</option>
+            <option value="pixel">pixels</option>
+          </select>
+        </div>
+        <div>
+          <label for="customDpi" class="block text-xs font-medium text-slate-600 mb-1">DPI</label>
+          <input id="customDpi" type="number" min="72" max="1200" step="1" value="300" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        </div>
+      </div>
+      <label class="mt-3 flex items-center gap-2 text-sm text-slate-600">
+        <input id="customLockRatio" type="checkbox" checked class="rounded border-slate-300">
+        Lock aspect ratio when width or height changes
+      </label>
+    </div>
+
+    <p id="presetDescription" class="mt-4 text-sm text-slate-500"></p>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 2: UPLOAD                                           -->
+  <!-- ========================================================== -->
+  <section id="uploadSection" aria-labelledby="upload-heading" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 id="upload-heading" class="text-lg font-semibold text-slate-900 mb-4">Upload Your Photo</h2>
+
+    <div id="dropzone" class="relative border-2 border-dashed border-slate-300 rounded-xl px-4 py-10 sm:py-14 text-center transition-colors">
+      <input id="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-describedby="uploadHelp">
+      <div class="pointer-events-none">
+        <div class="text-4xl mb-2" aria-hidden="true">📷</div>
+        <p class="font-semibold text-slate-800 hidden sm:block">Drag &amp; drop your photo here</p>
+        <p class="font-semibold text-slate-800 sm:hidden">Choose a photo from your phone</p>
+        <p class="text-sm text-slate-500 mt-1" id="uploadHelp">JPG, PNG, WEBP, HEIC or HEIF</p>
+        <p class="text-sm text-emerald-600 font-medium mt-3">🔒 Your photo stays on your device.</p>
+        <p class="mt-4 inline-block bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">Select a photo</p>
+      </div>
+    </div>
+
+    <div id="uploadedFileRow" class="hidden items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="text-2xl shrink-0" aria-hidden="true">✅</span>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-emerald-800">Photo uploaded</p>
+          <p class="text-sm text-emerald-700 truncate" id="uploadedFileName"></p>
+        </div>
+      </div>
+      <button id="replacePhotoBtn" type="button" class="text-sm font-medium text-blue-600 hover:text-blue-700 shrink-0">Replace photo</button>
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 3: EDITOR                                           -->
+  <!-- ========================================================== -->
+  <section id="editorSection" class="hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900 mb-4">Position &amp; Adjust</h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Editor viewport -->
+      <div>
+        <div id="editorFrameWrap" class="mx-auto checkerboard rounded-lg overflow-hidden border border-slate-300" style="max-width: 340px;">
+          <div id="editorViewport" class="relative w-full" style="aspect-ratio: 1 / 1;">
+            <canvas id="editorCanvas"></canvas>
+            <svg id="guideOverlay" class="absolute inset-0 w-full h-full pointer-events-none hidden" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 text-center mt-2">Drag the photo to position it. Pinch or use the zoom slider to resize.</p>
+      </div>
+
+      <!-- Controls -->
+      <div class="space-y-5">
+
+        <div>
+          <div class="flex justify-between text-sm font-medium text-slate-700 mb-1">
+            <label for="zoomSlider">Zoom</label>
+            <span id="zoomValue">100%</span>
+          </div>
+          <input id="zoomSlider" type="range" min="50" max="250" value="100" step="1" aria-label="Zoom">
+        </div>
+
+        <div class="flex gap-2">
+          <button id="rotateLeftBtn" type="button" class="flex-1 border border-slate-300 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50" aria-label="Rotate left 90 degrees">↶ Rotate Left</button>
+          <button id="rotateRightBtn" type="button" class="flex-1 border border-slate-300 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50" aria-label="Rotate right 90 degrees">↷ Rotate Right</button>
+        </div>
+
+        <div id="guideToggleWrap" class="flex items-center justify-between">
+          <label for="guideToggle" class="text-sm font-medium text-slate-700">Show Positioning Guide</label>
+          <button id="guideToggle" type="button" role="switch" aria-checked="false" class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-300 transition-colors">
+            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"></span>
+          </button>
+        </div>
+        <p id="guideHelpText" class="text-xs text-slate-500 -mt-3">Use these guides to help position your face. Requirements vary by country and application.</p>
+
+        <details class="border-t border-slate-200 pt-4">
+          <summary class="text-sm font-semibold text-slate-700 cursor-pointer select-none">Brightness &amp; contrast (optional)</summary>
+          <div class="mt-3 space-y-4">
+            <div>
+              <div class="flex justify-between text-sm text-slate-600 mb-1">
+                <label for="brightnessSlider">Brightness</label><span id="brightnessValue">0</span>
+              </div>
+              <input id="brightnessSlider" type="range" min="-100" max="100" value="0" step="1" aria-label="Brightness">
+            </div>
+            <div>
+              <div class="flex justify-between text-sm text-slate-600 mb-1">
+                <label for="contrastSlider">Contrast</label><span id="contrastValue">0</span>
+              </div>
+              <input id="contrastSlider" type="range" min="-100" max="100" value="0" step="1" aria-label="Contrast">
+            </div>
+            <button id="resetAdjustmentsBtn" type="button" class="text-sm font-medium text-blue-600 hover:text-blue-700">Reset Adjustments</button>
+          </div>
+        </details>
+
+        <button id="resetAllBtn" type="button" class="w-full border border-slate-300 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">Reset</button>
+
+        <!-- Background (future feature, honestly labeled) -->
+        <div class="text-xs text-slate-400 border-t border-slate-200 pt-4">Background tools — coming soon</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 3b: CONVERT-ONLY MODE (Custom JPG Conversion)       -->
+  <!-- ========================================================== -->
+  <section id="convertSection" class="hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900 mb-1">Convert Image to JPG</h2>
+    <p class="text-sm text-slate-500 mb-4">No cropping — your photo's full frame and aspect ratio are kept unless you set a custom size below.</p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div>
+        <div class="checkerboard rounded-lg overflow-hidden border border-slate-300 flex items-center justify-center" style="min-height:220px;">
+          <canvas id="convertCanvas" class="max-w-full max-h-80"></canvas>
+        </div>
+        <p id="convertOriginalDims" class="text-xs text-slate-500 text-center mt-2"></p>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <div class="flex justify-between text-sm font-medium text-slate-700 mb-1">
+            <label for="convertQuality">JPG quality</label>
+            <span id="convertQualityValue">92%</span>
+          </div>
+          <input id="convertQuality" type="range" min="60" max="98" value="92" step="1" aria-label="JPG quality">
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input id="convertResizeToggle" type="checkbox" class="rounded border-slate-300">
+          <label for="convertResizeToggle" class="text-sm font-medium text-slate-700">Resize output</label>
+        </div>
+        <div id="convertResizeControls" class="hidden grid grid-cols-2 gap-3">
+          <div>
+            <label for="convertWidth" class="block text-xs font-medium text-slate-600 mb-1">Width (px)</label>
+            <input id="convertWidth" type="number" min="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label for="convertHeight" class="block text-xs font-medium text-slate-600 mb-1">Height (px)</label>
+            <input id="convertHeight" type="number" min="1" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button id="convertRotateLeftBtn" type="button" class="flex-1 border border-slate-300 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">↶ Rotate Left</button>
+          <button id="convertRotateRightBtn" type="button" class="flex-1 border border-slate-300 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">↷ Rotate Right</button>
+        </div>
+
+        <details class="border-t border-slate-200 pt-4">
+          <summary class="text-sm font-semibold text-slate-700 cursor-pointer select-none">Brightness &amp; contrast (optional)</summary>
+          <div class="mt-3 space-y-4">
+            <div>
+              <div class="flex justify-between text-sm text-slate-600 mb-1"><label for="convertBrightness">Brightness</label><span id="convertBrightnessValue">0</span></div>
+              <input id="convertBrightness" type="range" min="-100" max="100" value="0" step="1">
+            </div>
+            <div>
+              <div class="flex justify-between text-sm text-slate-600 mb-1"><label for="convertContrast">Contrast</label><span id="convertContrastValue">0</span></div>
+              <input id="convertContrast" type="range" min="-100" max="100" value="0" step="1">
+            </div>
+          </div>
+        </details>
+
+        <button id="convertDownloadBtn" type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 text-sm">Convert &amp; Download JPG</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 4: FINAL PREVIEW + DOWNLOAD                         -->
+  <!-- ========================================================== -->
+  <section id="previewSection" class="hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900 mb-4">Final Photo</h2>
+
+    <div class="grid sm:grid-cols-[auto,1fr] gap-5 items-center">
+      <div class="checkerboard rounded-lg border border-slate-300 overflow-hidden mx-auto" style="width:160px;">
+        <canvas id="finalPreviewCanvas" class="w-full h-full block"></canvas>
+      </div>
+      <div class="space-y-1 text-sm">
+        <p><span id="finalDimsPx" class="font-semibold text-slate-900"></span> pixels</p>
+        <p id="finalDimsPhysical" class="text-slate-600"></p>
+        <p id="finalDpiTarget" class="text-slate-600"></p>
+        <p class="text-slate-600">Format: JPG or PNG</p>
+      </div>
+    </div>
+
+    <div class="mt-5 flex flex-col sm:flex-row gap-3">
+      <button id="downloadJpgBtn" type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 text-sm">Download JPG</button>
+      <button id="downloadPngBtn" type="button" class="flex-1 border border-slate-300 hover:bg-slate-50 font-semibold rounded-lg py-3 text-sm">Download PNG</button>
+    </div>
+    <p class="text-xs text-slate-400 mt-3">"300 DPI target" refers to the pixel dimensions calculated for 300 DPI printing, not embedded file metadata. Correct dimensions alone do not guarantee your photo will be accepted — check the current requirements of your passport, visa or ID authority.</p>
+  </section>
+
+  <!-- ========================================================== -->
+  <!-- SECTION 5: PRINTABLE SHEET                                  -->
+  <!-- ========================================================== -->
+  <section id="printSection" class="hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm">
+    <h2 class="text-lg font-semibold text-slate-900 mb-1">Create Printable Sheet</h2>
+    <p class="text-sm text-slate-500 mb-4">Arrange multiple copies of your photo onto one page to print at home or at a photo lab.</p>
+
+    <div class="grid sm:grid-cols-2 gap-6">
+      <div>
+        <fieldset>
+          <legend class="text-sm font-medium text-slate-700 mb-2">Sheet size</legend>
+          <div id="sheetSizeGroup" class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Sheet size"></div>
+        </fieldset>
+
+        <label class="mt-4 flex items-center gap-2 text-sm text-slate-600">
+          <input id="cuttingGuidesToggle" type="checkbox" checked class="rounded border-slate-300">
+          Show cutting guides
+        </label>
+
+        <p id="sheetCopyCount" class="text-sm text-slate-500 mt-3"></p>
+
+        <div class="flex flex-col sm:flex-row gap-3 mt-4">
+          <button id="generateSheetBtn" type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-2.5 text-sm">Generate Sheet</button>
+        </div>
+        <div id="sheetDownloadRow" class="hidden flex-col sm:flex-row gap-3 mt-3">
+          <button id="downloadSheetJpgBtn" type="button" class="flex-1 border border-slate-300 hover:bg-slate-50 font-semibold rounded-lg py-2.5 text-sm">Download Sheet JPG</button>
+          <button id="downloadSheetPngBtn" type="button" class="flex-1 border border-slate-300 hover:bg-slate-50 font-semibold rounded-lg py-2.5 text-sm">Download Sheet PNG</button>
+        </div>
+      </div>
+      <div class="checkerboard rounded-lg border border-slate-300 overflow-hidden flex items-center justify-center" style="min-height:220px;">
+        <canvas id="sheetPreviewCanvas" class="max-w-full max-h-72"></canvas>
+      </div>
+    </div>
+    <p class="text-xs text-slate-400 mt-4">Actual print dimensions depend on the printer and print settings. Use 100% / actual size when printing.</p>
+  </section>
+
+</main>
+
+<!-- ADSENSE BOTTOM -->
+<div id="adsense-bottom"></div>
+
+<!-- ============================================================ -->
+<!-- SEO CONTENT                                                   -->
+<!-- ============================================================ -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+  <article class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-8">
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">Free 2×2 Inch Passport Photo Maker</h2>
+      <p class="text-slate-600 leading-relaxed">The 2×2 inch photo is a common format used for US passport and visa applications. This tool crops your photo to 600 × 600 pixels, calculated at a 300 DPI target, so the physical size works out to exactly 2×2 inches when printed at that resolution. Correct dimensions are only one part of a compliant photo — see the requirements section below before submitting.</p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">35×45mm Passport Photo Maker</h2>
+      <p class="text-slate-600 leading-relaxed">35×45mm is a commonly used photo size for UK, EU and many other international passport, visa and ID applications. At a 300 DPI target this works out to approximately 413 × 531 pixels. Individual passport and visa authorities can have additional requirements beyond size, so always check current guidance for your specific application.</p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">How to Make a Passport Photo Online</h2>
+      <ol class="list-decimal list-inside text-slate-600 space-y-1">
+        <li>Upload your photo</li>
+        <li>Position and adjust it</li>
+        <li>Download your photo</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">Does This Website Upload My Photo?</h2>
+      <p class="text-slate-600 leading-relaxed">No. This tool is built to process your photo entirely inside your browser, using your device's own memory and processing power. Your image file is read locally, edited on an in-browser canvas, and the finished file is generated for download without ever being sent to a server operated by this website.</p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">Passport Photo Requirements</h2>
+      <p class="text-slate-600 leading-relaxed mb-2">Photo requirements can include, depending on the country and document type:</p>
+      <ul class="list-disc list-inside text-slate-600 space-y-1">
+        <li>Dimensions</li>
+        <li>Head size and position</li>
+        <li>Eye position</li>
+        <li>Facial expression</li>
+        <li>Background</li>
+        <li>Lighting and shadows</li>
+        <li>Clothing</li>
+        <li>Overall image quality</li>
+      </ul>
+      <p class="text-slate-600 leading-relaxed mt-2">This tool helps you hit the correct dimensions and position your photo using visual guides, but it does not verify compliance. Always confirm the current requirements with the relevant passport, visa or ID authority before submitting a photo.</p>
+    </section>
+  </article>
+</div>
+
+<!-- ============================================================ -->
+<!-- PRIVACY SECTION                                               -->
+<!-- ============================================================ -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+  <section class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 sm:p-8">
+    <h2 class="text-xl font-semibold text-emerald-900 mb-3">100% Private</h2>
+    <ul class="space-y-1.5 text-emerald-800">
+      <li>Your photo is processed entirely inside your browser.</li>
+      <li>Nothing is uploaded to our servers.</li>
+      <li>Your image is not stored by this website.</li>
+    </ul>
+  </section>
+</div>
+
+<!-- ============================================================ -->
+<!-- FAQ                                                           -->
+<!-- ============================================================ -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 mb-8">
+  <section class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
+    <h2 class="text-xl font-semibold text-slate-900 mb-4">Frequently Asked Questions</h2>
+    <div class="divide-y divide-slate-200">
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Is this passport photo maker free?</summary>
+        <p class="mt-2 text-slate-600">Yes. There is no charge to crop, adjust or download your photo, and there is no artificial limit on how many times you can download.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Does this website upload my photo?</summary>
+        <p class="mt-2 text-slate-600">No. All processing happens locally in your browser. Your photo is never sent to a server.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">What size is a US passport photo?</summary>
+        <p class="mt-2 text-slate-600">A common format is 2×2 inches, which this tool produces at 600 × 600 pixels using a 300 DPI target.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">What size is a 35×45mm passport photo?</summary>
+        <p class="mt-2 text-slate-600">35×45mm is approximately 413 × 531 pixels at a 300 DPI target.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I make a 2×2 visa photo?</summary>
+        <p class="mt-2 text-slate-600">Yes, the US Passport / Visa preset produces a 2×2 inch photo.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I use a photo taken with an iPhone?</summary>
+        <p class="mt-2 text-slate-600">Yes. Photos from an iPhone camera roll, including HEIC files, can be uploaded directly.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Does it support HEIC photos?</summary>
+        <p class="mt-2 text-slate-600">Yes. HEIC and HEIF files are decoded locally in your browser, either natively or with a local in-browser decoder, without ever being uploaded.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I convert HEIC to JPG?</summary>
+        <p class="mt-2 text-slate-600">Yes. Use "Custom JPG Conversion — No Crop" to convert a HEIC photo to JPG without cropping it.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I download a JPG?</summary>
+        <p class="mt-2 text-slate-600">Yes, JPG is the primary download format, generated locally at high quality.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I print multiple passport photos on one sheet?</summary>
+        <p class="mt-2 text-slate-600">Yes, use the "Create Printable Sheet" tool to arrange multiple copies on a 4×6, 5×7 or A4 page.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I use PNG?</summary>
+        <p class="mt-2 text-slate-600">Yes, a PNG download is available alongside JPG.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I rotate my photo?</summary>
+        <p class="mt-2 text-slate-600">Yes, use the rotate left and rotate right buttons in the editor.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Can I adjust brightness?</summary>
+        <p class="mt-2 text-slate-600">Yes, optional brightness and contrast sliders are available in the editor.</p>
+      </details>
+
+      <details class="py-3">
+        <summary class="font-medium text-slate-800 cursor-pointer">Does this guarantee that my passport photo will be accepted?</summary>
+        <p class="mt-2 text-slate-600">No. Correct dimensions alone do not guarantee acceptance. Authorities may have additional requirements involving background, lighting, pose, facial expression, eye position, head size, shadows, clothing and image quality. Always verify current requirements with the relevant authority before submitting your photo.</p>
+      </details>
+
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                        -->
+<!-- ============================================================ -->
+<footer class="bg-slate-900 text-slate-300">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 text-sm space-y-3">
+    <p class="text-white font-semibold">100% Private &amp; Secure</p>
+    <p>Your photos are processed entirely inside your browser and are never uploaded to a server.</p>
+    <p>Photo requirements vary by country and document type. Always verify the current requirements with the relevant passport, visa or ID authority before submitting a photo.</p>
+    <p class="text-slate-500 pt-2">&copy; <span id="footerYear"></span> Passport Photo Maker. Not affiliated with any government agency.</p>
+  </div>
+</footer>
+
+<!-- Hidden template used for downloads -->
+<a id="hiddenDownloadLink" class="hidden" aria-hidden="true"></a>
+
+<script>
+/* ================================================================
+   PASSPORT PHOTO MAKER — CLIENT-SIDE APPLICATION
+   All image processing happens locally in the browser.
+   No image data is ever sent to a server.
+   ================================================================ */
+
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------
+     1. CONFIGURATION — PHOTO SIZE PRESETS
+     Add new country/format presets here without touching the
+     cropper logic; everything is derived from this config.
+  ------------------------------------------------------------ */
+  const PRESETS = [
+    {
+      id: 'us-2x2', name: 'US Passport / Visa', shortLabel: '2×2 in',
+      widthVal: 2, heightVal: 2, unit: 'inch', dpi: 300,
+      description: 'Common format for US passport and visa photos (2×2 in / 600×600 px at a 300 DPI target).',
+      guide: true
+    },
+    {
+      id: 'eu-35x45', name: 'UK / EU / International', shortLabel: '35×45 mm',
+      widthVal: 35, heightVal: 45, unit: 'mm', dpi: 300,
+      description: 'Commonly used size for UK, EU and many international ID photos (35×45 mm).',
+      guide: true
+    },
+    {
+      id: 'ca-50x70', name: 'Canada', shortLabel: '50×70 mm',
+      widthVal: 50, heightVal: 70, unit: 'mm', dpi: 300,
+      description: 'Typical photo format used for Canadian passport and immigration photos (50×70 mm).',
+      guide: true
+    },
+    {
+      id: 'cn-33x48', name: 'China Visa', shortLabel: '33×48 mm',
+      widthVal: 33, heightVal: 48, unit: 'mm', dpi: 300,
+      description: 'Commonly requested size for Chinese visa applications (33×48 mm).',
+      guide: true
+    },
+    {
+      id: 'sq-35x35', name: 'Square ID Photo', shortLabel: '35×35 mm',
+      widthVal: 35, heightVal: 35, unit: 'mm', dpi: 300,
+      description: 'Square format used by some ID card and permit applications (35×35 mm).',
+      guide: true
+    },
+    {
+      id: 'custom', name: 'Custom Size', shortLabel: 'Custom',
+      custom: true, dpi: 300,
+      description: 'Set your own width, height, unit and DPI.',
+      guide: false
+    },
+    {
+      id: 'convert', name: 'Custom JPG Conversion', shortLabel: 'No crop',
+      convertOnly: true,
+      description: 'Convert any photo to JPG without cropping it.',
+      guide: false
+    }
+  ];
+
+  const SHEET_SIZES = [
+    { id: '4x6', name: '4×6 in', widthVal: 4, heightVal: 6, unit: 'inch' },
+    { id: '5x7', name: '5×7 in', widthVal: 5, heightVal: 7, unit: 'inch' },
+    { id: 'a4', name: 'A4', widthVal: 210, heightVal: 297, unit: 'mm' }
+  ];
+
+  const SHEET_DPI = 300;
+
+  /* ------------------------------------------------------------
+     2. DIMENSION MATH
+  ------------------------------------------------------------ */
+  function toPixels(widthVal, heightVal, unit, dpi) {
+    if (unit === 'pixel') {
+      return { w: Math.round(widthVal), h: Math.round(heightVal) };
+    }
+    const wIn = unit === 'mm' ? widthVal / 25.4 : widthVal;
+    const hIn = unit === 'mm' ? heightVal / 25.4 : heightVal;
+    return { w: Math.round(wIn * dpi), h: Math.round(hIn * dpi) };
+  }
+
+  function physicalLabel(widthVal, heightVal, unit) {
+    if (unit === 'mm') return widthVal + '×' + heightVal + ' mm';
+    if (unit === 'inch') return widthVal + '×' + heightVal + ' in';
+    return widthVal + '×' + heightVal + ' px';
+  }
+
+  /* ------------------------------------------------------------
+     3. APP STATE
+  ------------------------------------------------------------ */
+  const state = {
+    presetId: 'us-2x2',
+    customWidth: 35, customHeight: 45, customUnit: 'mm', customDpi: 300, customLock: true,
+
+    // decoded source image (EXIF-corrected, HEIC-decoded), kept at a capped safe resolution
+    sourceCanvas: null,
+    sourceW: 0, sourceH: 0,
+    fileBaseName: 'photo',
+
+    // crop/editor transform (all fractions relative to frame size, so preview & export match exactly)
+    zoom: 1,            // 1.0 = 100%
+    rotation: 0,        // 0, 90, 180, 270
+    panXFrac: 0,        // translation as a fraction of frame width
+    panYFrac: 0,
+    brightness: 0,      // -100..100
+    contrast: 0,        // -100..100
+    showGuides: false,
+
+    dragging: false,
+    dragStartX: 0, dragStartY: 0,
+    dragStartPanXFrac: 0, dragStartPanYFrac: 0,
+
+    // convert-only mode transform
+    convertRotation: 0,
+    convertBrightness: 0,
+    convertContrast: 0,
+
+    // print sheet
+    sheetId: '4x6',
+  };
+
+  function activePreset() { return PRESETS.find(p => p.id === state.presetId); }
+
+  function currentOutputSpec() {
+    const preset = activePreset();
+    if (preset.custom) {
+      return {
+        widthVal: state.customWidth, heightVal: state.customHeight,
+        unit: state.customUnit, dpi: state.customDpi
+      };
+    }
+    return { widthVal: preset.widthVal, heightVal: preset.heightVal, unit: preset.unit, dpi: preset.dpi };
+  }
+
+  function currentOutputPixels() {
+    const spec = currentOutputSpec();
+    return toPixels(spec.widthVal, spec.heightVal, spec.unit, spec.dpi);
+  }
+
+  /* ------------------------------------------------------------
+     4. DOM REFERENCES
+  ------------------------------------------------------------ */
+  const $ = (id) => document.getElementById(id);
+
+  const presetGrid = $('presetGrid');
+  const presetDescription = $('presetDescription');
+  const customSizeControls = $('customSizeControls');
+  const customWidthInput = $('customWidth');
+  const customHeightInput = $('customHeight');
+  const customUnitSelect = $('customUnit');
+  const customDpiInput = $('customDpi');
+  const customLockRatio = $('customLockRatio');
+
+  const dropzone = $('dropzone');
+  const fileInput = $('fileInput');
+  const uploadedFileRow = $('uploadedFileRow');
+  const uploadedFileName = $('uploadedFileName');
+  const replacePhotoBtn = $('replacePhotoBtn');
+
+  const editorSection = $('editorSection');
+  const editorViewport = $('editorViewport');
+  const editorCanvas = $('editorCanvas');
+  const guideOverlay = $('guideOverlay');
+
+  const zoomSlider = $('zoomSlider');
+  const zoomValue = $('zoomValue');
+  const rotateLeftBtn = $('rotateLeftBtn');
+  const rotateRightBtn = $('rotateRightBtn');
+  const guideToggle = $('guideToggle');
+  const guideToggleWrap = $('guideToggleWrap');
+  const guideHelpText = $('guideHelpText');
+
+  const brightnessSlider = $('brightnessSlider');
+  const brightnessValue = $('brightnessValue');
+  const contrastSlider = $('contrastSlider');
+  const contrastValue = $('contrastValue');
+  const resetAdjustmentsBtn = $('resetAdjustmentsBtn');
+  const resetAllBtn = $('resetAllBtn');
+
+  const convertSection = $('convertSection');
+  const convertCanvas = $('convertCanvas');
+  const convertOriginalDims = $('convertOriginalDims');
+  const convertQuality = $('convertQuality');
+  const convertQualityValue = $('convertQualityValue');
+  const convertResizeToggle = $('convertResizeToggle');
+  const convertResizeControls = $('convertResizeControls');
+  const convertWidthInput = $('convertWidth');
+  const convertHeightInput = $('convertHeight');
+  const convertRotateLeftBtn = $('convertRotateLeftBtn');
+  const convertRotateRightBtn = $('convertRotateRightBtn');
+  const convertBrightnessSlider = $('convertBrightness');
+  const convertBrightnessValue = $('convertBrightnessValue');
+  const convertContrastSlider = $('convertContrast');
+  const convertContrastValue = $('convertContrastValue');
+  const convertDownloadBtn = $('convertDownloadBtn');
+
+  const previewSection = $('previewSection');
+  const finalPreviewCanvas = $('finalPreviewCanvas');
+  const finalDimsPx = $('finalDimsPx');
+  const finalDimsPhysical = $('finalDimsPhysical');
+  const finalDpiTarget = $('finalDpiTarget');
+  const downloadJpgBtn = $('downloadJpgBtn');
+  const downloadPngBtn = $('downloadPngBtn');
+
+  const printSection = $('printSection');
+  const sheetSizeGroup = $('sheetSizeGroup');
+  const cuttingGuidesToggle = $('cuttingGuidesToggle');
+  const sheetCopyCount = $('sheetCopyCount');
+  const generateSheetBtn = $('generateSheetBtn');
+  const sheetDownloadRow = $('sheetDownloadRow');
+  const downloadSheetJpgBtn = $('downloadSheetJpgBtn');
+  const downloadSheetPngBtn = $('downloadSheetPngBtn');
+  const sheetPreviewCanvas = $('sheetPreviewCanvas');
+
+  const statusBanner = $('statusBanner');
+  const hiddenDownloadLink = $('hiddenDownloadLink');
+
+  const stepIndicators = [null, $('step-indicator-1'), $('step-indicator-2'), $('step-indicator-3'), $('step-indicator-4')];
+
+  $('footerYear').textContent = new Date().getFullYear();
+
+  /* ------------------------------------------------------------
+     5. STATUS / ERROR MESSAGES
+  ------------------------------------------------------------ */
+  function showStatus(message, kind) {
+    kind = kind || 'info';
+    const styles = {
+      info: 'bg-blue-50 border-blue-200 text-blue-800',
+      success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+      error: 'bg-red-50 border-red-200 text-red-800'
+    };
+    statusBanner.className = 'mb-4 rounded-lg border px-4 py-3 text-sm ' + styles[kind];
+    statusBanner.textContent = message;
+    statusBanner.classList.remove('hidden');
+  }
+  function hideStatus() { statusBanner.classList.add('hidden'); }
+
+  function setStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      const el = stepIndicators[i];
+      const badge = el.querySelector('span');
+      if (i <= n) {
+        el.classList.add('text-blue-600', 'font-semibold');
+        badge.classList.remove('bg-slate-200', 'text-slate-500');
+        badge.classList.add('bg-blue-600', 'text-white');
+      } else {
+        el.classList.remove('text-blue-600', 'font-semibold');
+        badge.classList.remove('bg-blue-600', 'text-white');
+        badge.classList.add('bg-slate-200', 'text-slate-500');
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------
+     6. PRESET UI
+  ------------------------------------------------------------ */
+  function renderPresetGrid() {
+    presetGrid.innerHTML = '';
+    PRESETS.forEach(preset => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.role = 'radio';
+      btn.setAttribute('aria-checked', preset.id === state.presetId ? 'true' : 'false');
+      btn.className = 'text-left border rounded-xl px-3 py-3 text-sm transition-colors ' +
+        (preset.id === state.presetId
+          ? 'border-blue-600 bg-blue-50 text-blue-800 ring-1 ring-blue-600'
+          : 'border-slate-200 hover:border-slate-300 text-slate-700');
+      btn.innerHTML = '<div class="font-semibold">' + preset.name + '</div>' +
+        (preset.shortLabel ? '<div class="text-xs mt-0.5 opacity-70">' + preset.shortLabel + '</div>' : '');
+      btn.addEventListener('click', () => selectPreset(preset.id));
+      presetGrid.appendChild(btn);
+    });
+    updatePresetDescription();
+  }
+
+  function updatePresetDescription() {
+    const preset = activePreset();
+    presetDescription.textContent = preset.description || '';
+  }
+
+  function selectPreset(id) {
+    state.presetId = id;
+    renderPresetGrid();
+    customSizeControls.classList.toggle('hidden', id !== 'custom');
+    guideToggleWrap.parentElement && null; // no-op guard
+
+    const preset = activePreset();
+
+    // Show/hide guide toggle depending on whether this preset supports positioning guidance
+    guideToggleWrap.style.display = preset.guide ? '' : 'none';
+    guideHelpText.style.display = preset.guide ? '' : 'none';
+
+    if (state.sourceCanvas) {
+      if (preset.convertOnly) {
+        switchToConvertMode();
+      } else {
+        switchToCropMode();
+      }
+    }
+  }
+
+  customWidthInput.addEventListener('input', () => {
+    const newW = parseFloat(customWidthInput.value) || 0;
+    if (state.customLock && state.customHeight && state.customWidth) {
+      const ratio = state.customHeight / state.customWidth;
+      state.customHeight = Math.max(1, Math.round(newW * ratio * 100) / 100);
+      customHeightInput.value = state.customHeight;
+    }
+    state.customWidth = newW;
+    refreshAfterCustomChange();
+  });
+  customHeightInput.addEventListener('input', () => {
+    const newH = parseFloat(customHeightInput.value) || 0;
+    if (state.customLock && state.customHeight && state.customWidth) {
+      const ratio = state.customWidth / state.customHeight;
+      state.customWidth = Math.max(1, Math.round(newH * ratio * 100) / 100);
+      customWidthInput.value = state.customWidth;
+    }
+    state.customHeight = newH;
+    refreshAfterCustomChange();
+  });
+  customUnitSelect.addEventListener('change', () => { state.customUnit = customUnitSelect.value; refreshAfterCustomChange(); });
+  customDpiInput.addEventListener('input', () => { state.customDpi = parseFloat(customDpiInput.value) || 300; refreshAfterCustomChange(); });
+  customLockRatio.addEventListener('change', () => { state.customLock = customLockRatio.checked; });
+
+  function refreshAfterCustomChange() {
+    updatePresetDescription();
+    if (state.sourceCanvas && !activePreset().convertOnly) {
+      applyFrameAspectRatio();
+      renderEditorCanvas();
+      updateFinalPreview();
+    }
+  }
+
+  /* ------------------------------------------------------------
+     7. UPLOAD HANDLING (drag/drop + click + mobile)
+  ------------------------------------------------------------ */
+  ['dragenter', 'dragover'].forEach(evt =>
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('drag-active'); })
+  );
+  ['dragleave', 'drop'].forEach(evt =>
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('drag-active'); })
+  );
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleFileSelected(file);
+  });
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (file) handleFileSelected(file);
+  });
+  replacePhotoBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    uploadedFileRow.classList.add('hidden');
+    uploadedFileRow.classList.remove('flex');
+    dropzone.classList.remove('hidden');
+    fileInput.click();
+  });
+
+  const ACCEPTED_EXT = /\.(jpe?g|png|webp|heic|heif)$/i;
+  const MAX_SAFE_DIMENSION = 4096; // cap working canvas to avoid crashing the browser on huge camera photos
+  const MIN_DIMENSION = 40;
+
+  function isHeicFile(file) {
+    return /\.(heic|heif)$/i.test(file.name || '') || /heic|heif/i.test(file.type || '');
+  }
+
+  async function handleFileSelected(file) {
+    hideStatus();
+
+    if (!file || !(ACCEPTED_EXT.test(file.name || '') || /^image\//.test(file.type || ''))) {
+      showStatus("That file type isn't supported. Please choose a JPG, PNG, WEBP, HEIC or HEIF photo.", 'error');
+      return;
+    }
+    if (file.size > 60 * 1024 * 1024) {
+      showStatus('That file is too large. Please choose a photo under 60 MB.', 'error');
+      return;
+    }
+
+    const heic = isHeicFile(file);
+    if (heic) showStatus('HEIC photo detected — converting locally…', 'info');
+    else showStatus('Reading your photo…', 'info');
+
+    try {
+      const bitmap = await decodeImageFile(file, heic);
+      if (bitmap.width < MIN_DIMENSION || bitmap.height < MIN_DIMENSION) {
+        showStatus('This image is too small to use for a passport photo. Please choose a higher-resolution photo.', 'error');
+        return;
+      }
+      loadBitmapIntoSource(bitmap, file.name);
+      uploadedFileName.textContent = file.name;
+      dropzone.classList.add('hidden');
+      uploadedFileRow.classList.remove('hidden');
+      uploadedFileRow.classList.add('flex');
+      showStatus('Ready — your photo stays on your device.', 'success');
+
+      if (activePreset().convertOnly) switchToConvertMode();
+      else switchToCropMode();
+
+    } catch (err) {
+      console.error(err);
+      if (heic) {
+        showStatus("Your browser couldn't read this HEIC photo. Try opening it in Safari or convert it to JPG on your device. Your photo was not uploaded.", 'error');
+      } else if (err && err.message === 'CORRUPTED') {
+        showStatus("This photo couldn't be read. It may be corrupted — please try a different file.", 'error');
+      } else {
+        showStatus('Something went wrong reading that photo. Please try a different file.', 'error');
+      }
+    }
+  }
+
+  // Lazy-loaded HEIC decoder (only fetched if the browser can't decode HEIC natively)
+  let heic2anyLoadPromise = null;
+  function ensureHeic2Any() {
+    if (window.heic2any) return Promise.resolve();
+    if (heic2anyLoadPromise) return heic2anyLoadPromise;
+    heic2anyLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('HEIC_LIB_LOAD_FAILED'));
+      document.head.appendChild(script);
+    });
+    return heic2anyLoadPromise;
+  }
+
+  // Decode any supported file into an ImageBitmap.
+  // imageOrientation:'from-image' asks the browser to apply EXIF orientation
+  // automatically while decoding, so the pixels come out already right-side up.
+  async function decodeImageFile(file, isHeic) {
+    try {
+      return await createImageBitmap(file, { imageOrientation: 'from-image' });
+    } catch (e) {
+      if (isHeic) {
+        await ensureHeic2Any();
+        let converted;
+        try {
+          converted = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+        } catch (e2) {
+          throw new Error('HEIC_DECODE_FAILED');
+        }
+        const convertedBlob = Array.isArray(converted) ? converted[0] : converted;
+        return await createImageBitmap(convertedBlob, { imageOrientation: 'from-image' });
+      }
+      throw new Error('CORRUPTED');
+    }
+  }
+
+  function loadBitmapIntoSource(bitmap, fileName) {
+    let w = bitmap.width, h = bitmap.height;
+    let scale = 1;
+    if (Math.max(w, h) > MAX_SAFE_DIMENSION) {
+      scale = MAX_SAFE_DIMENSION / Math.max(w, h);
+      w = Math.round(w * scale);
+      h = Math.round(h * scale);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    if (bitmap.close) bitmap.close();
+
+    state.sourceCanvas = canvas;
+    state.sourceW = w;
+    state.sourceH = h;
+    state.fileBaseName = sanitizeFilename((fileName || 'photo').replace(/\.[^.]+$/, ''));
+
+    // reset editing state for the new photo
+    state.zoom = 1; state.rotation = 0; state.panXFrac = 0; state.panYFrac = 0;
+    state.brightness = 0; state.contrast = 0;
+    state.convertRotation = 0; state.convertBrightness = 0; state.convertContrast = 0;
+    zoomSlider.value = 100; zoomValue.textContent = '100%';
+    brightnessSlider.value = 0; brightnessValue.textContent = '0';
+    contrastSlider.value = 0; contrastValue.textContent = '0';
+    convertBrightnessSlider.value = 0; convertBrightnessValue.textContent = '0';
+    convertContrastSlider.value = 0; convertContrastValue.textContent = '0';
+  }
+
+  function sanitizeFilename(name) {
+    return (name || 'photo').replace(/[^a-z0-9-_]+/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'photo';
+  }
+
+  /* ------------------------------------------------------------
+     8. MODE SWITCHING
+  ------------------------------------------------------------ */
+  function switchToCropMode() {
+    convertSection.classList.add('hidden');
+    editorSection.classList.remove('hidden');
+    previewSection.classList.remove('hidden');
+    printSection.classList.remove('hidden');
+    setStep(3);
+    applyFrameAspectRatio();
+    renderEditorCanvas();
+    updateFinalPreview();
+    renderSheetSizeOptions();
+    updateSheetCopyCount();
+  }
+
+  function switchToConvertMode() {
+    editorSection.classList.add('hidden');
+    previewSection.classList.add('hidden');
+    printSection.classList.add('hidden');
+    convertSection.classList.remove('hidden');
+    setStep(3);
+    convertWidthInput.value = state.sourceW;
+    convertHeightInput.value = state.sourceH;
+    convertOriginalDims.textContent = state.sourceW + ' × ' + state.sourceH + ' px (original)';
+    renderConvertCanvas();
+  }
+
+  /* ------------------------------------------------------------
+     9. CROP EDITOR — GEOMETRY HELPERS
+     All pan/zoom math is expressed as fractions of the frame size
+     so the interactive preview and the final export always match.
+  ------------------------------------------------------------ */
+  function frameAspectRatio() {
+    const preset = activePreset();
+    if (preset.custom) {
+      const px = toPixels(state.customWidth, state.customHeight, state.customUnit, state.customDpi);
+      return px.w / px.h;
+    }
+    const px = toPixels(preset.widthVal, preset.heightVal, preset.unit, preset.dpi);
+    return px.w / px.h;
+  }
+
+  function applyFrameAspectRatio() {
+    const ratio = frameAspectRatio();
+    editorViewport.style.aspectRatio = ratio + ' / 1';
+  }
+
+  // Returns the on-screen bounding box (in frame-fraction units, i.e. multiples
+  // of frame width/height) of the image after rotation + zoom, so we can clamp panning.
+  function effectiveImageBoxFrac(frameW, frameH) {
+    const rotated90 = (state.rotation % 180) !== 0;
+    const imgW = rotated90 ? state.sourceH : state.sourceW;
+    const imgH = rotated90 ? state.sourceW : state.sourceH;
+
+    // base scale: smallest scale that lets the image fully COVER the frame
+    const baseScale = Math.max(frameW / imgW, frameH / imgH);
+    const scale = baseScale * state.zoom;
+
+    return { effW: imgW * scale, effH: imgH * scale, scale };
+  }
+
+  function clampPan(frameW, frameH) {
+    const { effW, effH } = effectiveImageBoxFrac(frameW, frameH);
+    const maxPanX = Math.max(0, (effW - frameW) / 2);
+    const maxPanY = Math.max(0, (effH - frameH) / 2);
+    const panX = state.panXFrac * frameW;
+    const panY = state.panYFrac * frameH;
+    const clampedX = Math.min(maxPanX, Math.max(-maxPanX, panX));
+    const clampedY = Math.min(maxPanY, Math.max(-maxPanY, panY));
+    state.panXFrac = frameW ? clampedX / frameW : 0;
+    state.panYFrac = frameH ? clampedY / frameH : 0;
+  }
+
+  // Core renderer: draws state.sourceCanvas onto the given 2D context sized
+  // (canvasW x canvasH), representing exactly the crop frame at that resolution.
+  function renderCropToContext(ctx, canvasW, canvasH, brightness, contrast) {
+    ctx.save();
+    ctx.clearRect(0, 0, canvasW, canvasH);
+    ctx.filter = 'brightness(' + (100 + brightness) + '%) contrast(' + (100 + contrast) + '%)';
+    ctx.imageSmoothingQuality = 'high';
+
+    const { scale } = effectiveImageBoxFrac(canvasW, canvasH);
+    const panX = state.panXFrac * canvasW;
+    const panY = state.panYFrac * canvasH;
+
+    ctx.translate(canvasW / 2 + panX, canvasH / 2 + panY);
+    ctx.rotate(state.rotation * Math.PI / 180);
+    ctx.scale(scale, scale);
+    ctx.drawImage(state.sourceCanvas, -state.sourceW / 2, -state.sourceH / 2, state.sourceW, state.sourceH);
+    ctx.restore();
+  }
+
+  function renderEditorCanvas() {
+    if (!state.sourceCanvas) return;
+    const rect = editorViewport.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = Math.max(1, Math.round(rect.width * dpr));
+    const ch = Math.max(1, Math.round(rect.height * dpr));
+    if (editorCanvas.width !== cw) editorCanvas.width = cw;
+    if (editorCanvas.height !== ch) editorCanvas.height = ch;
+    clampPan(cw, ch);
+    const ctx = editorCanvas.getContext('2d');
+    renderCropToContext(ctx, cw, ch, state.brightness, state.contrast);
+    renderGuides();
+  }
+
+  function renderGuides() {
+    const preset = activePreset();
+    const show = state.showGuides && preset.guide;
+    guideOverlay.classList.toggle('hidden', !show);
+    if (!show) return;
+    guideOverlay.innerHTML =
+      '<line x1="50" y1="0" x2="50" y2="100" class="guide-line"></line>' +
+      '<line x1="8" y1="12" x2="92" y2="12" class="guide-line"></line>' +
+      '<line x1="8" y1="46" x2="92" y2="46" class="guide-line"></line>' +
+      '<line x1="8" y1="78" x2="92" y2="78" class="guide-line"></line>' +
+      '<text x="4" y="10" class="guide-label">Top of head</text>' +
+      '<text x="4" y="44" class="guide-label">Eye line</text>' +
+      '<text x="4" y="76" class="guide-label">Chin</text>';
+  }
+
+  /* ------------------------------------------------------------
+     10. CROP EDITOR — POINTER INTERACTION (mouse + touch)
+  ------------------------------------------------------------ */
+  editorViewport.addEventListener('pointerdown', (e) => {
+    if (!state.sourceCanvas) return;
+    state.dragging = true;
+    editorViewport.classList.add('dragging');
+    editorViewport.setPointerCapture(e.pointerId);
+    state.dragStartX = e.clientX;
+    state.dragStartY = e.clientY;
+    state.dragStartPanXFrac = state.panXFrac;
+    state.dragStartPanYFrac = state.panYFrac;
+  });
+
+  editorViewport.addEventListener('pointermove', (e) => {
+    if (!state.dragging) return;
+    const rect = editorViewport.getBoundingClientRect();
+    const dxFrac = (e.clientX - state.dragStartX) / rect.width;
+    const dyFrac = (e.clientY - state.dragStartY) / rect.height;
+    state.panXFrac = state.dragStartPanXFrac + dxFrac;
+    state.panYFrac = state.dragStartPanYFrac + dyFrac;
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+
+  function endDrag(e) {
+    if (!state.dragging) return;
+    state.dragging = false;
+    editorViewport.classList.remove('dragging');
+    try { editorViewport.releasePointerCapture(e.pointerId); } catch (err) {}
+  }
+  editorViewport.addEventListener('pointerup', endDrag);
+  editorViewport.addEventListener('pointercancel', endDrag);
+  editorViewport.addEventListener('pointerleave', () => { if (state.dragging) { /* keep dragging until pointerup due to capture */ } });
+
+  zoomSlider.addEventListener('input', () => {
+    state.zoom = parseFloat(zoomSlider.value) / 100;
+    zoomValue.textContent = zoomSlider.value + '%';
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+
+  rotateLeftBtn.addEventListener('click', () => {
+    state.rotation = (state.rotation + 270) % 360;
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+  rotateRightBtn.addEventListener('click', () => {
+    state.rotation = (state.rotation + 90) % 360;
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+
+  guideToggle.addEventListener('click', () => {
+    state.showGuides = !state.showGuides;
+    guideToggle.setAttribute('aria-checked', String(state.showGuides));
+    guideToggle.classList.toggle('bg-blue-600', state.showGuides);
+    guideToggle.classList.toggle('bg-slate-300', !state.showGuides);
+    guideToggle.querySelector('span').style.transform = state.showGuides ? 'translateX(20px)' : 'translateX(4px)';
+    renderGuides();
+  });
+
+  brightnessSlider.addEventListener('input', () => {
+    state.brightness = parseInt(brightnessSlider.value, 10);
+    brightnessValue.textContent = state.brightness;
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+  contrastSlider.addEventListener('input', () => {
+    state.contrast = parseInt(contrastSlider.value, 10);
+    contrastValue.textContent = state.contrast;
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+  resetAdjustmentsBtn.addEventListener('click', () => {
+    state.brightness = 0; state.contrast = 0;
+    brightnessSlider.value = 0; contrastSlider.value = 0;
+    brightnessValue.textContent = '0'; contrastValue.textContent = '0';
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+
+  resetAllBtn.addEventListener('click', () => {
+    state.zoom = 1; state.rotation = 0; state.panXFrac = 0; state.panYFrac = 0;
+    state.brightness = 0; state.contrast = 0;
+    zoomSlider.value = 100; zoomValue.textContent = '100%';
+    brightnessSlider.value = 0; brightnessValue.textContent = '0';
+    contrastSlider.value = 0; contrastValue.textContent = '0';
+    renderEditorCanvas();
+    updateFinalPreview();
+  });
+
+  window.addEventListener('resize', () => {
+    if (state.sourceCanvas && !editorSection.classList.contains('hidden')) {
+      renderEditorCanvas();
+      updateFinalPreview();
+    }
+  });
+
+  /* ------------------------------------------------------------
+     11. FINAL PREVIEW + EXPORT (crop mode)
+  ------------------------------------------------------------ */
+  function updateFinalPreview() {
+    const dims = currentOutputPixels();
+    const spec = currentOutputSpec();
+
+    // small on-screen preview canvas
+    const previewSize = 160;
+    const previewH = Math.round(previewSize * dims.h / dims.w);
+    finalPreviewCanvas.width = previewSize;
+    finalPreviewCanvas.height = previewH;
+    renderCropToContext(finalPreviewCanvas.getContext('2d'), previewSize, previewH, state.brightness, state.contrast);
+
+    finalDimsPx.textContent = dims.w + ' × ' + dims.h;
+    finalDimsPhysical.textContent = physicalLabel(spec.widthVal, spec.heightVal, spec.unit) +
+      (spec.unit !== 'pixel' ? ' at ' + spec.dpi + ' DPI target' : '');
+    finalDpiTarget.textContent = spec.unit !== 'pixel'
+      ? spec.dpi + ' DPI target (pixel dimensions only — not embedded file metadata)'
+      : 'Custom pixel size';
+  }
+
+  function renderFullResExportCanvas() {
+    const dims = currentOutputPixels();
+    const canvas = document.createElement('canvas');
+    canvas.width = dims.w;
+    canvas.height = dims.h;
+    renderCropToContext(canvas.getContext('2d'), dims.w, dims.h, state.brightness, state.contrast);
+    return canvas;
+  }
+
+  function downloadCanvas(canvas, mimeType, extension, filename) {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        showStatus('Your browser could not create the image. Please try again or use a modern browser.', 'error');
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      hiddenDownloadLink.href = url;
+      hiddenDownloadLink.download = filename;
+      hiddenDownloadLink.click();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }, mimeType, mimeType === 'image/jpeg' ? 0.95 : undefined);
+  }
+
+  function presetFileSlug() {
+    const preset = activePreset();
+    if (preset.custom) return 'custom-' + Math.round(state.customWidth) + 'x' + Math.round(state.customHeight) + state.customUnit;
+    if (preset.id === 'us-2x2') return '2x2';
+    if (preset.id === 'eu-35x45') return '35x45mm';
+    if (preset.id === 'ca-50x70') return '50x70mm';
+    if (preset.id === 'cn-33x48') return '33x48mm';
+    if (preset.id === 'sq-35x35') return '35x35mm';
+    return preset.id;
+  }
+
+  downloadJpgBtn.addEventListener('click', () => {
+    if (!state.sourceCanvas) return;
+    try {
+      const canvas = renderFullResExportCanvas();
+      if (canvas.width < 1 || canvas.height < 1) throw new Error('BAD_DIMS');
+      downloadCanvas(canvas, 'image/jpeg', 'jpg', 'passport-photo-' + presetFileSlug() + '.jpg');
+    } catch (e) {
+      showStatus('Your browser could not create the image. Please try again or use a modern browser.', 'error');
+    }
+  });
+  downloadPngBtn.addEventListener('click', () => {
+    if (!state.sourceCanvas) return;
+    try {
+      const canvas = renderFullResExportCanvas();
+      if (canvas.width < 1 || canvas.height < 1) throw new Error('BAD_DIMS');
+      downloadCanvas(canvas, 'image/png', 'png', 'passport-photo-' + presetFileSlug() + '.png');
+    } catch (e) {
+      showStatus('Your browser could not create the image. Please try again or use a modern browser.', 'error');
+    }
+  });
+
+  /* ------------------------------------------------------------
+     12. CUSTOM JPG CONVERSION MODE (no crop)
+  ------------------------------------------------------------ */
+  function renderConvertCanvas() {
+    if (!state.sourceCanvas) return;
+    const rotated90 = (state.convertRotation % 180) !== 0;
+    const outW = rotated90 ? state.sourceH : state.sourceW;
+    const outH = rotated90 ? state.sourceW : state.sourceH;
+
+    const maxPreview = 420;
+    const scale = Math.min(1, maxPreview / Math.max(outW, outH));
+    convertCanvas.width = Math.max(1, Math.round(outW * scale));
+    convertCanvas.height = Math.max(1, Math.round(outH * scale));
+
+    drawConvertFrame(convertCanvas.getContext('2d'), convertCanvas.width, convertCanvas.height,
+      state.convertRotation, state.convertBrightness, state.convertContrast);
+  }
+
+  function drawConvertFrame(ctx, canvasW, canvasH, rotation, brightness, contrast) {
+    ctx.save();
+    ctx.clearRect(0, 0, canvasW, canvasH);
+    ctx.filter = 'brightness(' + (100 + brightness) + '%) contrast(' + (100 + contrast) + '%)';
+    ctx.imageSmoothingQuality = 'high';
+
+    const rotated90 = (rotation % 180) !== 0;
+    const srcW = state.sourceW, srcH = state.sourceH;
+    const boundsW = rotated90 ? srcH : srcW;
+    const boundsH = rotated90 ? srcW : srcH;
+    const fitScale = Math.min(canvasW / boundsW, canvasH / boundsH);
+
+    ctx.translate(canvasW / 2, canvasH / 2);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.scale(fitScale, fitScale);
+    ctx.drawImage(state.sourceCanvas, -srcW / 2, -srcH / 2, srcW, srcH);
+    ctx.restore();
+  }
+
+  convertRotateLeftBtn.addEventListener('click', () => { state.convertRotation = (state.convertRotation + 270) % 360; syncConvertResizeInputsToRotation(); renderConvertCanvas(); });
+  convertRotateRightBtn.addEventListener('click', () => { state.convertRotation = (state.convertRotation + 90) % 360; syncConvertResizeInputsToRotation(); renderConvertCanvas(); });
+
+  function syncConvertResizeInputsToRotation() {
+    const rotated90 = (state.convertRotation % 180) !== 0;
+    if (!convertResizeToggle.checked) {
+      convertWidthInput.value = rotated90 ? state.sourceH : state.sourceW;
+      convertHeightInput.value = rotated90 ? state.sourceW : state.sourceH;
+    }
+  }
+
+  convertBrightnessSlider.addEventListener('input', () => {
+    state.convertBrightness = parseInt(convertBrightnessSlider.value, 10);
+    convertBrightnessValue.textContent = state.convertBrightness;
+    renderConvertCanvas();
+  });
+  convertContrastSlider.addEventListener('input', () => {
+    state.convertContrast = parseInt(convertContrastSlider.value, 10);
+    convertContrastValue.textContent = state.convertContrast;
+    renderConvertCanvas();
+  });
+  convertQuality.addEventListener('input', () => { convertQualityValue.textContent = convertQuality.value + '%'; });
+  convertResizeToggle.addEventListener('change', () => {
+    convertResizeControls.classList.toggle('hidden', !convertResizeToggle.checked);
+    if (!convertResizeToggle.checked) syncConvertResizeInputsToRotation();
+  });
+
+  convertDownloadBtn.addEventListener('click', () => {
+    if (!state.sourceCanvas) return;
+    try {
+      const rotated90 = (state.convertRotation % 180) !== 0;
+      let outW = rotated90 ? state.sourceH : state.sourceW;
+      let outH = rotated90 ? state.sourceW : state.sourceH;
+      if (convertResizeToggle.checked) {
+        const w = parseInt(convertWidthInput.value, 10);
+        const h = parseInt(convertHeightInput.value, 10);
+        if (w > 0 && h > 0) { outW = w; outH = h; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = outW; canvas.height = outH;
+      drawConvertFrame(canvas.getContext('2d'), outW, outH, state.convertRotation, state.convertBrightness, state.convertContrast);
+      const quality = parseInt(convertQuality.value, 10) / 100;
+      canvas.toBlob((blob) => {
+        if (!blob) { showStatus('Your browser could not create the image. Please try again or use a modern browser.', 'error'); return; }
+        const url = URL.createObjectURL(blob);
+        hiddenDownloadLink.href = url;
+        hiddenDownloadLink.download = 'converted-image.jpg';
+        hiddenDownloadLink.click();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      }, 'image/jpeg', quality);
+    } catch (e) {
+      showStatus('Your browser could not create the image. Please try again or use a modern browser.', 'error');
+    }
+  });
+
+  /* ------------------------------------------------------------
+     13. PRINTABLE PHOTO SHEET
+  ------------------------------------------------------------ */
+  function renderSheetSizeOptions() {
+    sheetSizeGroup.innerHTML = '';
+    SHEET_SIZES.forEach(sheet => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.role = 'radio';
+      btn.setAttribute('aria-checked', sheet.id === state.sheetId ? 'true' : 'false');
+      btn.className = 'border rounded-lg py-2 text-sm font-medium transition-colors ' +
+        (sheet.id === state.sheetId ? 'border-blue-600 bg-blue-50 text-blue-800' : 'border-slate-200 hover:border-slate-300 text-slate-700');
+      btn.textContent = sheet.name;
+      btn.addEventListener('click', () => { state.sheetId = sheet.id; renderSheetSizeOptions(); updateSheetCopyCount(); });
+      sheetSizeGroup.appendChild(btn);
+    });
+  }
+
+  function activeSheet() { return SHEET_SIZES.find(s => s.id === state.sheetId); }
+
+  function computeSheetLayout() {
+    const sheet = activeSheet();
+    const sheetPx = toPixels(sheet.widthVal, sheet.heightVal, sheet.unit, SHEET_DPI);
+    const photoPx = currentOutputPixels();
+    const margin = Math.round(SHEET_DPI * 0.15); // small outer margin
+    const gap = Math.round(SHEET_DPI * 0.06);    // gap between photos for cutting guides
+
+    const usableW = sheetPx.w - margin * 2;
+    const usableH = sheetPx.h - margin * 2;
+    const cols = Math.max(0, Math.floor((usableW + gap) / (photoPx.w + gap)));
+    const rows = Math.max(0, Math.floor((usableH + gap) / (photoPx.h + gap)));
+
+    return { sheetPx, photoPx, margin, gap, cols, rows, count: cols * rows };
+  }
+
+  function updateSheetCopyCount() {
+    if (!state.sourceCanvas) return;
+    const layout = computeSheetLayout();
+    if (layout.count <= 0) {
+      sheetCopyCount.textContent = 'Your selected photo size is too large to fit on this sheet.';
+    } else {
+      sheetCopyCount.textContent = 'Fits ' + layout.count + ' cop' + (layout.count === 1 ? 'y' : 'ies') + ' (' + layout.cols + ' × ' + layout.rows + ') on this sheet.';
+    }
+    sheetDownloadRow.classList.add('hidden');
+  }
+
+  function renderSheetCanvas() {
+    const layout = computeSheetLayout();
+    const canvas = document.createElement('canvas');
+    canvas.width = layout.sheetPx.w;
+    canvas.height = layout.sheetPx.h;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (layout.count <= 0 || !state.sourceCanvas) return canvas;
+
+    const photoCanvas = renderFullResExportCanvas();
+
+    const totalW = layout.cols * layout.photoPx.w + (layout.cols - 1) * layout.gap;
+    const totalH = layout.rows * layout.photoPx.h + (layout.rows - 1) * layout.gap;
+    const startX = Math.round((canvas.width - totalW) / 2);
+    const startY = Math.round((canvas.height - totalH) / 2);
+
+    for (let r = 0; r < layout.rows; r++) {
+      for (let c = 0; c < layout.cols; c++) {
+        const x = startX + c * (layout.photoPx.w + layout.gap);
+        const y = startY + r * (layout.photoPx.h + layout.gap);
+        ctx.drawImage(photoCanvas, x, y, layout.photoPx.w, layout.photoPx.h);
+
+        if (cuttingGuidesToggle.checked) {
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([6, 4]);
+          ctx.strokeRect(x, y, layout.photoPx.w, layout.photoPx.h);
+        }
+      }
+    }
+    return canvas;
+  }
+
+  let lastSheetCanvas = null;
+
+  generateSheetBtn.addEventListener('click', () => {
+    if (!state.sourceCanvas) return;
+    const layout = computeSheetLayout();
+    if (layout.count <= 0) {
+      showStatus('This photo size is too large to fit on the selected sheet. Try a smaller sheet size or different photo size.', 'error');
+      sheetDownloadRow.classList.add('hidden');
+      return;
+    }
+    lastSheetCanvas = renderSheetCanvas();
+
+    const maxPreview = 320;
+    const scale = Math.min(1, maxPreview / Math.max(lastSheetCanvas.width, lastSheetCanvas.height));
+    sheetPreviewCanvas.width = Math.round(lastSheetCanvas.width * scale);
+    sheetPreviewCanvas.height = Math.round(lastSheetCanvas.height * scale);
+    const pctx = sheetPreviewCanvas.getContext('2d');
+    pctx.imageSmoothingQuality = 'high';
+    pctx.drawImage(lastSheetCanvas, 0, 0, sheetPreviewCanvas.width, sheetPreviewCanvas.height);
+
+    sheetDownloadRow.classList.remove('hidden');
+    sheetDownloadRow.classList.add('flex');
+    showStatus('Printable sheet ready.', 'success');
+  });
+
+  cuttingGuidesToggle.addEventListener('change', () => { sheetDownloadRow.classList.add('hidden'); });
+
+  downloadSheetJpgBtn.addEventListener('click', () => {
+    if (!lastSheetCanvas) return;
+    downloadCanvas(lastSheetCanvas, 'image/jpeg', 'jpg', 'passport-photo-sheet-' + state.sheetId + '.jpg');
+  });
+  downloadSheetPngBtn.addEventListener('click', () => {
+    if (!lastSheetCanvas) return;
+    downloadCanvas(lastSheetCanvas, 'image/png', 'png', 'passport-photo-sheet-' + state.sheetId + '.png');
+  });
+
+  /* ------------------------------------------------------------
+     14. INIT
+  ------------------------------------------------------------ */
+  renderPresetGrid();
+  selectPreset(state.presetId);
+  renderSheetSizeOptions();
+
+})();
+</script>
+
+</body>
+</html>
